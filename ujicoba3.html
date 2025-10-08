@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teka-teki Bahasa Inggris</title>
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #001f3f; /* Biru tua */
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  .container {
+    background-color: #87CEFA; /* Biru muda */
+    color: black;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    width: 90%;
+    max-width: 750px;
+    text-align: center;
+  }
+
+  h2 {
+    color: #000;
+    margin-bottom: 20px;
+  }
+
+  .word-list {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+
+  .word {
+    background-color: white;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    padding: 10px 15px;
+    cursor: grab;
+    font-size: 16px;
+    user-select: none;
+  }
+
+  textarea {
+    width: 100%;
+    height: 80px;
+    border-radius: 10px;
+    border: 2px solid #ccc;
+    background-color: white;
+    font-size: 16px;
+    padding: 10px;
+    resize: none;
+    margin-bottom: 15px;
+  }
+
+  .buttons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  button {
+    background-color: #001f3f;
+    color: white;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  button:hover {
+    background-color: #003366;
+  }
+
+  .feedback {
+    margin-top: 15px;
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  .nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h2>Susun Kalimat Bahasa Inggris</h2>
+    <div id="wordList" class="word-list"></div>
+
+    <textarea id="answerArea" placeholder="Tarik kata ke sini..." readonly></textarea>
+
+    <div class="buttons">
+      <button id="checkBtn">Hasil</button>
+      <button id="resetBtn">Reset</button>
+    </div>
+
+    <div class="nav-buttons">
+      <button id="prevBtn">Previous</button>
+      <button id="nextBtn">Next</button>
+    </div>
+
+    <div id="feedback" class="feedback"></div>
+  </div>
+
+  <script>
+    // Daftar soal
+    const sentences = [
+      { words: ["I", "am", "going", "to", "the", "market"], answer: "i am going to the market" },
+      { words: ["I", "will", "go", "to", "the", "mountain"], answer: "i will go to the mountain" },
+      { words: ["I", "will", "play", "foodball", "tomorrow"], answer: "i will play foodball tomorrow" },
+      { words: ["I", "am", "speaking", "english"], answer: "i am speaking english" },
+      { words: ["I", "went", "to", "the", "zoo", "yesterday"], answer: "i went to the zoo yesterday" }
+    ];
+
+    let current = 0;
+
+    const wordList = document.getElementById("wordList");
+    const answerArea = document.getElementById("answerArea");
+    const feedback = document.getElementById("feedback");
+    const checkBtn = document.getElementById("checkBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const prevBtn = document.getElementById("prevBtn");
+
+    // Fungsi acak urutan kata
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    // Render soal
+    function renderSentence() {
+      const sentence = sentences[current];
+      wordList.innerHTML = "";
+      feedback.textContent = "";
+      answerArea.value = "";
+
+      const shuffled = shuffle([...sentence.words]);
+      shuffled.forEach(word => {
+        const div = document.createElement("div");
+        div.classList.add("word");
+        div.draggable = true;
+        div.textContent = word;
+        div.addEventListener("dragstart", dragStart);
+        wordList.appendChild(div);
+      });
+    }
+
+    // Fungsi drag dan drop
+    function dragStart(e) {
+      e.dataTransfer.setData("text/plain", e.target.textContent);
+    }
+
+    answerArea.addEventListener("dragover", e => e.preventDefault());
+    answerArea.addEventListener("drop", e => {
+      e.preventDefault();
+      const word = e.dataTransfer.getData("text/plain");
+      if (word) {
+        answerArea.value += (answerArea.value ? " " : "") + word;
+        document.querySelectorAll(".word").forEach(el => {
+          if (el.textContent === word) el.remove();
+        });
+      }
+    });
+
+    // Tombol hasil
+    checkBtn.addEventListener("click", () => {
+      const userAnswer = answerArea.value.trim().toLowerCase();
+      const correct = sentences[current].answer;
+      if (userAnswer === correct) {
+        feedback.textContent = "Hebat! Jawaban anda benar 🎉";
+        feedback.style.color = "green";
+      } else {
+        feedback.textContent = "Ma’af jawaban anda salah, ulangi lagi 😔";
+        feedback.style.color = "red";
+      }
+    });
+
+    // Tombol reset
+    resetBtn.addEventListener("click", renderSentence);
+
+    // Tombol next dan previous
+    nextBtn.addEventListener("click", () => {
+      if (current < sentences.length - 1) {
+        current++;
+        renderSentence();
+      }
+    });
+
+    prevBtn.addEventListener("click", () => {
+      if (current > 0) {
+        current--;
+        renderSentence();
+      }
+    });
+
+    // Tampilkan soal pertama
+    renderSentence();
+  </script>
+</body>
+</html>
