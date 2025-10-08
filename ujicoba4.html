@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tugas Menyusun Kalimat Bahasa Inggris</title>
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-image: url('https://images.unsplash.com/photo-1608889179117-b4a0d8cf9b0b?auto=format&fit=crop&w=1200&q=80');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .container {
+    background-color: rgba(255, 192, 203, 0.9); /* pink lembut */
+    padding: 25px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 750px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    color: black;
+  }
+
+  h2 {
+    text-align: center;
+    color: #000;
+  }
+
+  #questionNumber {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 15px;
+  }
+
+  .word-list {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+
+  .word {
+    background-color: white;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    padding: 10px 15px;
+    cursor: grab;
+    font-size: 16px;
+    user-select: none;
+  }
+
+  textarea {
+    width: 100%;
+    height: 80px;
+    border-radius: 10px;
+    border: 2px solid #ccc;
+    background-color: white;
+    font-size: 16px;
+    padding: 10px;
+    resize: none;
+    margin-bottom: 15px;
+  }
+
+  .buttons, .nav-buttons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  button {
+    background-color: #c71585;
+    color: white;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  button:hover {
+    background-color: #8b0a50;
+  }
+
+  .feedback {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h2>Susun Kalimat Bahasa Inggris</h2>
+    <div id="questionNumber"></div>
+
+    <div id="wordList" class="word-list"></div>
+
+    <textarea id="answerArea" placeholder="Tarik kata ke sini..." readonly></textarea>
+
+    <div class="buttons">
+      <button id="checkBtn">Hasil</button>
+      <button id="resetBtn">Reset</button>
+    </div>
+
+    <div class="nav-buttons">
+      <button id="prevBtn">Previous</button>
+      <button id="nextBtn">Next</button>
+    </div>
+
+    <div id="feedback" class="feedback"></div>
+  </div>
+
+  <script>
+    // Soal dan jawaban benar
+    const sentences = [
+      { words: ["I", "am", "going", "to", "the", "market"], answer: "i am going to the market" },
+      { words: ["I", "will", "go", "to", "the", "mountain"], answer: "i will go to the mountain" },
+      { words: ["I", "will", "play", "football", "tomorrow"], answer: "i will play football tomorrow" },
+      { words: ["I", "am", "speaking", "english"], answer: "i am speaking english" },
+      { words: ["I", "went", "to", "the", "zoo", "yesterday"], answer: "i went to the zoo yesterday" }
+    ];
+
+    let current = 0;
+
+    const wordList = document.getElementById("wordList");
+    const answerArea = document.getElementById("answerArea");
+    const feedback = document.getElementById("feedback");
+    const questionNumber = document.getElementById("questionNumber");
+    const checkBtn = document.getElementById("checkBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const prevBtn = document.getElementById("prevBtn");
+
+    // Fungsi acak kata
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    // Menampilkan soal
+    function renderSentence() {
+      const sentence = sentences[current];
+      wordList.innerHTML = "";
+      feedback.textContent = "";
+      answerArea.value = "";
+      questionNumber.textContent = `Kalimat ${current + 1} dari ${sentences.length}`;
+
+      const shuffled = shuffle([...sentence.words]);
+      shuffled.forEach(word => {
+        const div = document.createElement("div");
+        div.classList.add("word");
+        div.draggable = true;
+        div.textContent = word;
+        div.addEventListener("dragstart", dragStart);
+        wordList.appendChild(div);
+      });
+    }
+
+    // Drag & drop
+    function dragStart(e) {
+      e.dataTransfer.setData("text/plain", e.target.textContent);
+    }
+
+    answerArea.addEventListener("dragover", e => e.preventDefault());
+    answerArea.addEventListener("drop", e => {
+      e.preventDefault();
+      const word = e.dataTransfer.getData("text/plain");
+      if (word) {
+        answerArea.value += (answerArea.value ? " " : "") + word;
+        document.querySelectorAll(".word").forEach(el => {
+          if (el.textContent === word) el.remove();
+        });
+      }
+    });
+
+    // Tombol cek jawaban
+    checkBtn.addEventListener("click", () => {
+      const userAnswer = answerArea.value.trim().toLowerCase();
+      const correct = sentences[current].answer;
+      if (userAnswer === correct) {
+        feedback.textContent = "Hebat! Jawaban anda benar 🎉";
+        feedback.style.color = "green";
+      } else {
+        feedback.textContent = "Ma’af jawaban anda salah, ulangi lagi 😔";
+        feedback.style.color = "red";
+      }
+    });
+
+    // Tombol reset
+    resetBtn.addEventListener("click", renderSentence);
+
+    // Navigasi soal
+    nextBtn.addEventListener("click", () => {
+      if (current < sentences.length - 1) {
+        current++;
+        renderSentence();
+      }
+    });
+
+    prevBtn.addEventListener("click", () => {
+      if (current > 0) {
+        current--;
+        renderSentence();
+      }
+    });
+
+    // Tampilkan soal pertama
+    renderSentence();
+  </script>
+</body>
+</html>
