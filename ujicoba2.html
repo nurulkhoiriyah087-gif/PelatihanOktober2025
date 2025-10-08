@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Soal Informatika - Perangkat Keras Masukan</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #1E90FF; /* Biru */
+      color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background-color: #FFC0CB; /* Pink */
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      width: 90%;
+      max-width: 750px;
+      text-align: center;
+    }
+
+    h2 {
+      color: #000;
+      margin-bottom: 20px;
+    }
+
+    .image-list {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .item {
+      background-color: white;
+      border-radius: 10px;
+      border: 2px solid #ccc;
+      width: 160px;
+      height: 130px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: grab;
+    }
+
+    .item img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 10px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 80px;
+      border-radius: 10px;
+      border: 2px solid #ccc;
+      background-color: white; /* Putih */
+      font-size: 16px;
+      padding: 10px;
+      resize: none;
+      margin-bottom: 15px;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    button {
+      background-color: #00008B;
+      color: white;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #003399;
+    }
+
+    .feedback {
+      margin-top: 15px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Pilih gambar yang merupakan <u>perangkat keras masukan</u></h2>
+
+    <div class="image-list" id="imageList"></div>
+
+    <textarea id="answerArea" placeholder="Tarik gambar ke sini..." readonly></textarea>
+
+    <div class="buttons">
+      <button id="checkBtn">Hasil</button>
+      <button id="resetBtn">Reset</button>
+    </div>
+
+    <div id="feedback" class="feedback"></div>
+  </div>
+
+  <script>
+    // Gambar perangkat komputer (tanpa teks nama)
+    const items = [
+      { name: "mouse", src: "https://upload.wikimedia.org/wikipedia/commons/4/4c/Computer_mouse.jpg" },
+      { name: "proyektor", src: "https://upload.wikimedia.org/wikipedia/commons/0/05/Video_projector.jpg" },
+      { name: "monitor", src: "https://upload.wikimedia.org/wikipedia/commons/3/3a/LG_L194WT-SF_LCD_monitor.jpg" }
+    ];
+
+    const correctAnswer = "mouse";
+
+    const imageList = document.getElementById("imageList");
+    const answerArea = document.getElementById("answerArea");
+    const feedback = document.getElementById("feedback");
+    const checkBtn = document.getElementById("checkBtn");
+    const resetBtn = document.getElementById("resetBtn");
+
+    // Fungsi acak urutan gambar
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    // Tampilkan gambar ke layar
+    function renderImages() {
+      imageList.innerHTML = "";
+      feedback.textContent = "";
+      answerArea.value = "";
+
+      const shuffled = shuffle([...items]);
+      shuffled.forEach(item => {
+        const div = document.createElement("div");
+        div.classList.add("item");
+        div.draggable = true;
+        div.setAttribute("data-name", item.name);
+        div.innerHTML = `<img src="${item.src}" alt="gambar">`;
+        div.addEventListener("dragstart", dragStart);
+        imageList.appendChild(div);
+      });
+    }
+
+    // Fungsi drag dan drop
+    function dragStart(e) {
+      e.dataTransfer.setData("text/plain", e.target.closest(".item").dataset.name);
+    }
+
+    answerArea.addEventListener("dragover", e => e.preventDefault());
+    answerArea.addEventListener("drop", e => {
+      e.preventDefault();
+      const draggedItem = e.dataTransfer.getData("text/plain");
+      if (draggedItem) {
+        answerArea.value = draggedItem;
+        document.querySelectorAll(".item").forEach(el => {
+          if (el.dataset.name === draggedItem) el.remove();
+        });
+      }
+    });
+
+    // Cek jawaban
+    checkBtn.addEventListener("click", () => {
+      const userAnswer = answerArea.value.trim().toLowerCase();
+      if (userAnswer === correctAnswer) {
+        feedback.textContent = "Hebat! Jawaban anda benar 🎉";
+        feedback.style.color = "green";
+      } else {
+        feedback.textContent = "Ma’af jawaban anda salah, ulangi lagi 😔";
+        feedback.style.color = "red";
+      }
+    });
+
+    // Tombol reset
+    resetBtn.addEventListener("click", renderImages);
+
+    // Jalankan saat pertama kali
+    renderImages();
+  </script>
+</body>
+</html>
