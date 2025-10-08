@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>TEKA-TEKI</title>
+  <style>
+    :root{--bg:#c8facc;--card:#ffffff;--accent:#2b7cff;--success:#118a3a;--danger:#d32f2f}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;background:linear-gradient(180deg,var(--bg),#aef0b4);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+    .container{width:100%;max-width:720px;background:var(--card);border-radius:12px;box-shadow:0 8px 30px rgba(43,124,255,0.08);padding:28px}
+    header{text-align:center;margin-bottom:18px}
+    h1{margin:0;font-size:clamp(24px,4vw,36px);color:var(--accent);letter-spacing:1px}
+    .puzzle{font-size:18px;margin:18px 0;padding:14px;background:#f7fbff;border-radius:8px;border:1px solid #e6f0ff}
+    .controls{display:flex;gap:10px;align-items:center}
+    input[type=text]{flex:1;padding:10px 12px;font-size:16px;border:1px solid #cfdffb;border-radius:8px}
+    button{background:var(--accent);color:white;border:none;padding:10px 14px;border-radius:8px;font-weight:600;cursor:pointer}
+    button:active{transform:translateY(1px)}
+    .feedback{margin-top:14px;padding:12px;border-radius:8px;display:none}
+    .feedback.success{display:block;background:rgba(17,138,58,0.08);color:var(--success);border:1px solid rgba(17,138,58,0.15)}
+    .feedback.error{display:block;background:rgba(211,47,47,0.06);color:var(--danger);border:1px solid rgba(211,47,47,0.12)}
+    .hint{font-size:13px;color:#5b6b86;margin-top:8px}
+    @media (max-width:520px){.controls{flex-direction:column}button{width:100%}}
+  </style>
+</head>
+<body>
+  <main class="container" role="main">
+    <header>
+      <h1>TEKA-TEKI</h1>
+    </header>
+
+    <section>
+      <div class="puzzle" id="puzzle">
+        "Aku adalah seekor hewan. Jumlah kakiku ada empat buah. Aku memiliki ekor. Aku juga memiliki belalai. Siapakah aku?"
+      </div>
+
+      <div class="controls">
+        <input id="answer" type="text" placeholder="Tulis jawabanmu di sini..." aria-label="Jawaban teka-teki">
+        <button id="checkBtn" type="button">Cek Jawaban</button>
+      </div>
+
+      <div id="feedback" class="feedback" role="status" aria-live="polite"></div>
+      <div class="hint">Catatan: jawaban yang diterima: <strong>Gajah</strong> (bisa ditulis Gajah, gajah, atau GAJAH).</div>
+    </section>
+  </main>
+
+  <script>
+    (function(){
+      const input = document.getElementById('answer');
+      const btn = document.getElementById('checkBtn');
+      const fb = document.getElementById('feedback');
+      const normalize = s => (s||'').trim().toLowerCase();
+      const correct = 'gajah';
+
+      function showFeedback(isCorrect){
+        if(isCorrect){
+          fb.className = 'feedback success';
+          fb.textContent = 'Jawaban Anda benar, hebat';
+        } else {
+          fb.className = 'feedback error';
+          fb.textContent = 'Jawaban Anda salah, silahkan coba lagi.';
+        }
+      }
+
+      btn.addEventListener('click', ()=>{
+        const val = normalize(input.value);
+        showFeedback(val === correct);
+      });
+
+      input.addEventListener('keydown', (e)=>{
+        if(e.key === 'Enter'){
+          e.preventDefault();
+          btn.click();
+        }
+      });
+
+      window.addEventListener('load', ()=> input.focus());
+    })();
+  </script>
+</body>
+</html>
