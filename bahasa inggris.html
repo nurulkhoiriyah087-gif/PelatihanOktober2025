@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Urutkan Kata Bahasa Inggris</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #064e3b; /* hijau tua */
+      color: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .container {
+      background-color: #b7f7b2; /* hijau muda */
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      padding: 20px;
+      width: 90%;
+      max-width: 600px;
+      text-align: center;
+    }
+    h1 {
+      color: #064e3b;
+    }
+    .word-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .word {
+      background-color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: grab;
+      user-select: none;
+      border: 1px solid #ccc;
+    }
+    textarea {
+      width: 100%;
+      height: 80px;
+      border-radius: 8px;
+      border: 2px solid #ccc;
+      background-color: white;
+      font-size: 16px;
+      padding: 10px;
+      resize: none;
+    }
+    .buttons {
+      margin-top: 15px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+    button {
+      background-color: #064e3b;
+      color: white;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background-color: #046b45;
+    }
+    .feedback {
+      margin-top: 15px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Urutkan Kata Bahasa Inggris</h1>
+    <p>Susun kata berikut agar menjadi kalimat yang benar!</p>
+
+    <div class="word-list" id="wordList"></div>
+
+    <textarea id="answerArea" placeholder="Tarik kata ke sini..." readonly></textarea>
+
+    <div class="buttons">
+      <button id="checkBtn">Hasil</button>
+      <button id="resetBtn">Reset</button>
+    </div>
+
+    <div id="feedback" class="feedback"></div>
+  </div>
+
+  <script>
+    const words = ["I", "am", "going", "to", "the", "market"];
+
+    const wordList = document.getElementById('wordList');
+    const answerArea = document.getElementById('answerArea');
+    const feedback = document.getElementById('feedback');
+    const checkBtn = document.getElementById('checkBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    // Fungsi acak kata
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    // Tampilkan kata acak
+    function renderWords() {
+      wordList.innerHTML = '';
+      const shuffled = shuffle([...words]);
+      shuffled.forEach(word => {
+        const span = document.createElement('div');
+        span.textContent = word;
+        span.classList.add('word');
+        span.draggable = true;
+        span.addEventListener('dragstart', dragStart);
+        wordList.appendChild(span);
+      });
+    }
+
+    function dragStart(e) {
+      e.dataTransfer.setData('text/plain', e.target.textContent);
+      e.target.classList.add('dragging');
+    }
+
+    answerArea.addEventListener('dragover', e => {
+      e.preventDefault();
+    });
+
+    answerArea.addEventListener('drop', e => {
+      e.preventDefault();
+      const text = e.dataTransfer.getData('text/plain');
+      if (text) {
+        if (answerArea.value.trim() !== '') {
+          answerArea.value += '-' + text; // pakai tanda -
+        } else {
+          answerArea.value = text;
+        }
+        // Hapus kata yang sudah dipindahkan
+        const wordElements = document.querySelectorAll('.word');
+        wordElements.forEach(el => {
+          if (el.textContent === text) el.remove();
+        });
+      }
+    });
+
+    // Cek hasil
+    checkBtn.addEventListener('click', () => {
+      const userAnswer = answerArea.value.trim();
+      const correctAnswer = 'I-am-going-to-the-market';
+      if (userAnswer === correctAnswer) {
+        feedback.textContent = 'Hebat! Jawaban anda benar!';
+        feedback.style.color = 'green';
+      } else {
+        feedback.textContent = 'Ma’af jawaban anda salah, ulangi lagi!';
+        feedback.style.color = 'red';
+      }
+    });
+
+    // Reset
+    resetBtn.addEventListener('click', () => {
+      answerArea.value = '';
+      feedback.textContent = '';
+      renderWords();
+    });
+
+    // Jalankan awal
+    renderWords();
+  </script>
+</body>
+</html>
