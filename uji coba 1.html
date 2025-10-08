@@ -3,75 +3,74 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Soal Informatika - Perangkat Keras</title>
+  <title>Soal Informatika - Perangkat Keras Masukan</title>
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background-color: #1E90FF; /* biru */
+      background-color: #1E90FF; /* Biru */
       color: #000;
       display: flex;
-      flex-direction: column;
-      align-items: center;
       justify-content: center;
+      align-items: center;
       min-height: 100vh;
     }
 
     .container {
-      background-color: #ffc0cb; /* pink */
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      background-color: #FFC0CB; /* Pink */
       padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
       width: 90%;
       max-width: 700px;
       text-align: center;
     }
 
-    h1 {
+    h2 {
       color: #000;
+      margin-bottom: 20px;
     }
 
     .image-list {
       display: flex;
-      flex-wrap: wrap;
       justify-content: center;
+      flex-wrap: wrap;
       gap: 15px;
       margin-bottom: 20px;
     }
 
     .item {
       background-color: white;
-      padding: 10px;
-      border-radius: 8px;
-      cursor: grab;
+      border-radius: 10px;
       border: 2px solid #ccc;
       width: 150px;
       height: 130px;
       display: flex;
       align-items: center;
       justify-content: center;
+      cursor: grab;
     }
 
     .item img {
       width: 100%;
       height: 100%;
       object-fit: contain;
-      border-radius: 5px;
+      border-radius: 10px;
     }
 
     textarea {
       width: 100%;
       height: 80px;
-      border-radius: 8px;
+      border-radius: 10px;
       border: 2px solid #ccc;
-      background-color: white;
+      background-color: white; /* Putih */
       font-size: 16px;
       padding: 10px;
       resize: none;
+      margin-bottom: 15px;
     }
 
     .buttons {
-      margin-top: 15px;
       display: flex;
       justify-content: center;
       gap: 10px;
@@ -80,7 +79,7 @@
     button {
       background-color: #00008B;
       color: white;
-      padding: 10px 16px;
+      padding: 10px 18px;
       border: none;
       border-radius: 8px;
       cursor: pointer;
@@ -96,19 +95,14 @@
       font-size: 18px;
       font-weight: bold;
     }
-
-    .question-title {
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Soal Informatika</h1>
-    <p class="question-title">Pilih gambar perangkat keras masukan</p>
+    <h2>Pilih gambar perangkat keras <u>masukan</u></h2>
 
     <div class="image-list" id="imageList"></div>
+
     <textarea id="answerArea" placeholder="Tarik gambar ke sini..." readonly></textarea>
 
     <div class="buttons">
@@ -120,7 +114,7 @@
   </div>
 
   <script>
-    // Data gambar (tanpa nama ditampilkan)
+    // Gambar perangkat komputer (tanpa teks nama)
     const items = [
       { name: "mouse", src: "https://upload.wikimedia.org/wikipedia/commons/4/4c/Computer_mouse.jpg" },
       { name: "proyektor", src: "https://upload.wikimedia.org/wikipedia/commons/0/05/Video_projector.jpg" },
@@ -129,13 +123,13 @@
 
     const correctAnswer = "mouse";
 
-    const imageList = document.getElementById('imageList');
-    const answerArea = document.getElementById('answerArea');
-    const feedback = document.getElementById('feedback');
-    const checkBtn = document.getElementById('checkBtn');
-    const resetBtn = document.getElementById('resetBtn');
+    const imageList = document.getElementById("imageList");
+    const answerArea = document.getElementById("answerArea");
+    const feedback = document.getElementById("feedback");
+    const checkBtn = document.getElementById("checkBtn");
+    const resetBtn = document.getElementById("resetBtn");
 
-    // Fungsi acak
+    // Fungsi acak urutan gambar
     function shuffle(array) {
       for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -144,59 +138,57 @@
       return array;
     }
 
-    // Tampilkan gambar
+    // Tampilkan gambar ke layar
     function renderImages() {
-      feedback.textContent = '';
-      answerArea.value = '';
-      imageList.innerHTML = '';
+      imageList.innerHTML = "";
+      feedback.textContent = "";
+      answerArea.value = "";
 
       const shuffled = shuffle([...items]);
-
       shuffled.forEach(item => {
-        const div = document.createElement('div');
-        div.classList.add('item');
+        const div = document.createElement("div");
+        div.classList.add("item");
         div.draggable = true;
-        div.setAttribute('data-name', item.name);
+        div.setAttribute("data-name", item.name);
         div.innerHTML = `<img src="${item.src}" alt="${item.name}">`;
-        div.addEventListener('dragstart', dragStart);
+        div.addEventListener("dragstart", dragStart);
         imageList.appendChild(div);
       });
     }
 
-    // Drag dan Drop
+    // Fungsi drag dan drop
     function dragStart(e) {
-      e.dataTransfer.setData('text/plain', e.target.closest('.item').dataset.name);
+      e.dataTransfer.setData("text/plain", e.target.closest(".item").dataset.name);
     }
 
-    answerArea.addEventListener('dragover', e => e.preventDefault());
-    answerArea.addEventListener('drop', e => {
+    answerArea.addEventListener("dragover", e => e.preventDefault());
+    answerArea.addEventListener("drop", e => {
       e.preventDefault();
-      const text = e.dataTransfer.getData('text/plain');
-      if (text) {
-        answerArea.value = text;
-        const elements = document.querySelectorAll('.item');
-        elements.forEach(el => {
-          if (el.dataset.name === text) el.remove();
+      const draggedItem = e.dataTransfer.getData("text/plain");
+      if (draggedItem) {
+        answerArea.value = draggedItem;
+        document.querySelectorAll(".item").forEach(el => {
+          if (el.dataset.name === draggedItem) el.remove();
         });
       }
     });
 
-    // Tombol hasil
-    checkBtn.addEventListener('click', () => {
+    // Cek jawaban
+    checkBtn.addEventListener("click", () => {
       const userAnswer = answerArea.value.trim().toLowerCase();
       if (userAnswer === correctAnswer) {
-        feedback.textContent = 'Hebat! Jawaban anda benar!';
-        feedback.style.color = 'green';
+        feedback.textContent = "Hebat! Jawaban anda benar 🎉";
+        feedback.style.color = "green";
       } else {
-        feedback.textContent = 'Ma’af jawaban anda salah, ulangi lagi!';
-        feedback.style.color = 'red';
+        feedback.textContent = "Ma’af jawaban anda salah, ulangi lagi 😔";
+        feedback.style.color = "red";
       }
     });
 
     // Tombol reset
-    resetBtn.addEventListener('click', renderImages);
+    resetBtn.addEventListener("click", renderImages);
 
-    // Jalankan awal
+    // Jalankan saat pertama kali
     renderImages();
   </script>
 </body>
